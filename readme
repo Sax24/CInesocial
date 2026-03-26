@@ -1,0 +1,87 @@
+Jeton d'acces : 
+eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4NGU4YWIwMjI5Njc5ZTQ3MjQ0ODgwNzJmZDczNjAyMSIsIm5iZiI6MTc3MzkxNjI2Mi4zMjQsInN1YiI6IjY5YmJkMDY2ZjU1MWE1NTVlYmE5ODYyOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sCwVxb5x0sqM1buHFEdKxVmvLfXsGUyPUrckODhMJmo
+
+clé d'API: 
+84e8ab0229679e4724488072fd736021
+
+https://api.themoviedb.org/3/
+
+Requêtes utiles à tester
+
+Films populaires GET /3/movie/popular
+Films tendance aujourd'hui GET /3/trending/movie/day
+Rechercher un film GET /3/search/movie?query=inception
+Détail d'un film GET /3/movie/27205
+Films en salle GET /3/movie/now_playing
+Sorties à venir GET /3/movie/upcoming
+
+__________________________________________A PROPOS DU PROJET __________________________________
+CinéSocial — Culture & Médias
+Concept : Une app où les utilisateurs suivent les sorties cinéma/séries en cours, les notent et laissent des commentaires.
+API externe dynamique
+The Movie Database (TMDB) — gratuite, très complète, mise à jour quotidiennement avec les sorties, tendances, notes.
+Fonctionnalités utilisateur (contenu généré)
+
+Créer un profil / se connecter
+Noter un film ( 1-5) et laisser un commentaire
+Voir les commentaires des autres utilisateurs
+Ajouter des films à sa watchlist
+Rechercher des films
+
+Appel API externe régulier
+
+Au chargement : récupère les films tendance du moment via TMDB
+Tous les soirs (tâche planifiée côté serveur) : met à jour le catalogue des nouvelles sorties
+
+__________________________Stack technique respectant les contraintes________________
+
+Serveur : Go + net/http 
+Client : React + Bootstrap
+Échanges : 100% AJAX/JSON
+BDD : SQLite ou PostgreSQL pour stocker users, notes, commentaires
+
+
+___________________________ DOCKER ____________________________________
+# 1️⃣ Vérifier que Docker tourne
+sudo systemctl status docker
+# Si Docker n’est pas actif :
+sudo systemctl start docker
+
+# 2️⃣ Vérifier que ton utilisateur peut utiliser Docker
+groups
+# Si tu ne vois pas 'docker' :
+sudo usermod -aG docker $USER
+# Recharge la session (ou ferme/reconnecte)
+newgrp docker
+
+# 3️⃣ Tester Docker
+docker ps
+
+# 4️⃣ Lancer le conteneur PostgreSQL
+docker run --name cinesocial-db \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=secret \
+  -e POSTGRES_DB=cinesocial \
+  -p 5432:5432 \
+  -d postgres
+
+# 5️⃣ Vérifier que PostgreSQL tourne
+docker ps
+docker logs cinesocial-db
+
+# 6️⃣ Arrêter / relancer / supprimer le conteneur
+docker stop cinesocial-db
+docker start cinesocial-db
+docker rm -f cinesocial-db
+
+💡 Connexion à la DB pour ton app
+Host : localhost
+Port : 5432
+User : admin
+Password : secret
+Database : cinesocial
+
+Lancer le docker : docker start cinesocial-db
+docker ps
+docker logs cinesocial-db
+
