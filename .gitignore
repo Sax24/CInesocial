@@ -1,1 +1,18 @@
 echo ".env" >> .gitignore
+
+
+# Binaires compilés
+*.exe
+*.out
+backend
+
+# Dépendances téléchargées
+vendor/
+
+# Fichiers systèmes
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
