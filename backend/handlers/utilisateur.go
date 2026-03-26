@@ -5,7 +5,8 @@ import (
     "encoding/json"
     "net/http"
     "cinesocial/models"
-	"fmt"
+    "golang.org/x/crypto/bcrypt"
+    "fmt"
 )
 
 func CreerUtilisateur(db *sql.DB, w http.ResponseWriter, r *http.Request) {
@@ -15,13 +16,19 @@ func CreerUtilisateur(db *sql.DB, w http.ResponseWriter, r *http.Request) {
     }
 
     var u models.Utilisateur
+
     json.NewDecoder(r.Body).Decode(&u)
-	fmt.Println("Nom: ",u.NomUtilisateur)
-	fmt.Println("u.Email: ",u.Email)
-	fmt.Println("u.Email: ",u.MotDePasse)
-    _, err := db.Exec(
+    
+    //Hash du mot de passe
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.MotDePasse), bcrypt.DefaultCost)
+    if err != nil {
+        http.Error(w, "Erreur hash mot de passe", http.StatusInternalServerError)
+        return
+    }
+    fmt.Println("MDP : ", )
+    _, err = db.Exec(
         "INSERT INTO utilisateurs (nom_u, email, mot_de_passe) VALUES ($1, $2, $3)",
-        u.NomUtilisateur, u.Email, u.MotDePasse,
+        u.NomUtilisateur, u.Email, string(hashedPassword),
     )
     if err != nil {
         http.Error(w, "Erreur insertion", http.StatusInternalServerError)
