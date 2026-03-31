@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { register } from "../services/auth";
-import { useNavigate } from "react-router-dom";
+import { login } from "../services/auth";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-export default function Register() {
+export default function Login() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        nom_u: "",
         email: "",
         mot_de_passe: "",
     });
@@ -17,13 +16,15 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await register(formData);
+        const response = await login(formData);
         if (response.ok) {
-             navigate("/login"); 
-             toast.success("Inscription réussie !");
-            console.log("OK ", response);
+            const data = await response.json();
+            console.log("TOKEN",data.token);
+            localStorage.setItem("token", data.token); 
+            toast.success("Connexion réussie !");
+            setTimeout(() => navigate("/accueil"), 1500);
         } else {
-            toast.error("Erreur lors de l'inscription");
+            toast.error("Email ou mot de passe incorrect");
         }
 
     };
@@ -32,26 +33,11 @@ export default function Register() {
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" className="mx-auto h-10 w-auto" />
-                <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">Bienvenue sur CineSocial</h2>
+                <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">Se connecter</h2>
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form onSubmit={handleSubmit} method="POST" className="space-y-6">
-                    <div>
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="nom_u" className="block text-sm/6 font-medium text-gray-100">Nom</label>
-                        </div>
-                        <div className="mt-2">
-                            <input id="nom_u"
-                                type="text"
-                                name="nom_u" required
-                                autoComplete="nom_u"
-                                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                                onChange={handleChange}
-                                value={formData.nom_u}
-                            />
-                        </div>
-                    </div>
                     <div>
                         <div className="flex items-center justify-between">
                             <label htmlFor="email" className="block text-sm/6 font-medium text-gray-100">Adresse email</label>
@@ -93,8 +79,8 @@ export default function Register() {
                 </form>
 
                 <p className="mt-10 text-center text-sm/6 text-gray-400 flex justify-between">
-                    Déjà un compte?
-                    <a href="/login" className="font-semibold text-indigo-400 hover:text-indigo-300">Se connecter</a>
+                    Pas encore membre?
+                    <a href="/register" className="font-semibold text-indigo-400 hover:text-indigo-300">S'inscrire'</a>
                 </p>
             </div>
         </div>
