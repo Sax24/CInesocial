@@ -4,7 +4,6 @@ echo ".env" >> .gitignore
 # Binaires compilés
 *.exe
 *.out
-backend
 
 # Dépendances téléchargées
 vendor/

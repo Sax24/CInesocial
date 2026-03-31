@@ -54,10 +54,10 @@ sudo usermod -aG docker $USER
 # Recharge la session (ou ferme/reconnecte)
 newgrp docker
 
-# 3️⃣ Tester Docker
+# 3️Tester Docker
 docker ps
 
-# 4️⃣ Lancer le conteneur PostgreSQL
+# 4️Lancer le conteneur PostgreSQL
 docker run --name cinesocial-db \
   -e POSTGRES_USER=admin \
   -e POSTGRES_PASSWORD=secret \
@@ -65,7 +65,7 @@ docker run --name cinesocial-db \
   -p 5432:5432 \
   -d postgres
 
-# 5️⃣ Vérifier que PostgreSQL tourne
+# 5️Vérifier que PostgreSQL tourne
 docker ps
 docker logs cinesocial-db
 
@@ -74,7 +74,7 @@ docker stop cinesocial-db
 docker start cinesocial-db
 docker rm -f cinesocial-db
 
-💡 Connexion à la DB pour ton app
+ Connexion à la DB pour ton app
 Host : localhost
 Port : 5432
 User : admin
@@ -85,3 +85,65 @@ Lancer le docker : docker start cinesocial-db
 docker ps
 docker logs cinesocial-db
 
+____CLONER LE PROJET PAR DOKCER__________
+docker-compose up --build 
+
+
+
+
+CREATE TABLE utilisateurs (
+    id SERIAL PRIMARY KEY,
+    nom_u VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    mot_de_passe TEXT NOT NULL,
+    cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE notes (
+    id SERIAL PRIMARY KEY,
+    utilisateur_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    tmdb_id INT NOT NULL,
+    score INT CHECK (score BETWEEN 1 AND 5),
+    cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(utilisateur_id, tmdb_id)
+);  fmt.Println("MDP : ", string(hashedPassword))
+
+CREATE TABLE commentaires (
+    id SERIAL PRIMARY KEY,
+    utilisateur_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    tmdb_id INT NOT NULL,
+    contenu TEXT NOT NULL,
+    cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE liste_a_voir (
+    id SERIAL PRIMARY KEY,
+    utilisateur_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    tmdb_id INT NOT NULL,
+    ajoute_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(utilisateur_id, tmdb_id)
+);
+
+_______FRONTEND__________
+frontend/
+├── src/
+│   ├── components/        → composants réutilisables
+│   │   ├── Navbar.jsx
+│   │   └── FilmCard.jsx
+│   │
+│   ├── pages/             → une page = un fichier
+│   │   ├── Register.jsx   ← inscription ici
+│   │   ├── Login.jsx
+│   │   ├── Accueil.jsx
+│   │   ├── Film.jsx
+│   │   └── Watchlist.jsx
+│   │
+│   ├── services/          → appels API vers ton backend
+│   │   ├── auth.js        → login, register
+│   │   └── films.js       → tendance, recherche
+│   │
+│   ├── context/           → état global (utilisateur connecté)
+│   │   └── AuthContext.jsx
+│   │
+│   ├── App.jsx            → routes de l'application
+│   └── main.jsx
