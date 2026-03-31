@@ -16,7 +16,8 @@ export default function Register() {
         e.preventDefault();
         const response = await register(formData);
         if (response.ok) {
-            window.location.href = "/login";
+            // window.location.href = "/login";
+            console.log("OK ", response);
         } else {
             alert("Erreur lors de l'inscription");
         }
@@ -38,7 +39,7 @@ export default function Register() {
                         </div>
                         <div className="mt-2">
                             <input id="nom_u"
-                                type="nom_u"
+                                type="text"
                                 name="nom_u" required
                                 autoComplete="nom_u"
                                 className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
