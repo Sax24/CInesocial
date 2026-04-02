@@ -147,3 +147,52 @@ frontend/
 │   │
 │   ├── App.jsx            → routes de l'application
 │   └── main.jsx
+
+
+🎬 Structure de la page d'accueil
+1. 🔝 Navbar
+
+Logo CinéSocial
+Barre de recherche (centrée)
+Bouton Watchlist + avatar utilisateur
+
+
+2. 🎯 Hero Section
+
+Titre accrocheur : "Découvrez, notez, partagez"
+Sous-titre court
+Fond avec une affiche de film en arrière-plan (image TMDB)
+
+
+3. 🔥 Films Tendance
+
+Titre de section : "Tendances du moment"
+Grille de cartes films (affiche + titre + note moyenne)
+Chaque carte cliquable → page détail du film
+
+
+4. 💬 Activité Récente
+
+Titre : "Ce que dit la communauté"
+Liste des derniers commentaires des utilisateurs
+Avatar + nom + film concerné + extrait du commentaire
+
+
+5. 🔍 Résultats de recherche
+
+Apparaît dynamiquement quand l'utilisateur tape dans la navbar
+Remplace temporairement le contenu principal
+
+
+📐 Layout général
+┌─────────────────────────────┐
+│         NAVBAR              │
+├─────────────────────────────┤
+│         HERO                │
+├─────────────────────────────┤
+│      FILMS TENDANCE         │
+│  [card][card][card][card]   │
+├─────────────────────────────┤
+│     ACTIVITÉ RÉCENTE        │
+│  [comment][comment]...      │
+└─────────────────────────────┘

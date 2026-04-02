@@ -1,88 +1,124 @@
 import { useState } from "react";
+import { register } from "../services/auth";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    nom_u: "",
-    email: "",
-    mot_de_passe: "",
-  });
+  const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        nom_u: "",
+        email: "",
+        mot_de_passe: "",
+    });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // TODO : appel API
-    console.log(formData);
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const response = await register(formData);
+        if (response.ok) {
+             navigate("/login"); 
+             toast.success("Inscription réussie !");
+            console.log("OK ", response);
+        } else {
+            toast.error("Erreur lors de l'inscription");
+        }
+
+    };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="bg-gray-900 rounded-2xl shadow-xl p-8 w-full max-w-md">
+    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <img
+          alt="Your Company"
+          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+          className="mx-auto h-10 w-auto"
+        />
+        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+          Bienvenue sur CineSocial
+        </h2>
+      </div>
 
-        {/* Titre */}
-        <h1 className="text-3xl font-bold text-white text-center mb-2">🎬 CinéSocial</h1>
-        <p className="text-gray-400 text-center mb-8">Créer un compte</p>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* Nom d'utilisateur */}
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form onSubmit={handleSubmit} method="POST" className="space-y-6">
           <div>
-            <label className="text-gray-300 text-sm mb-1 block">Nom d'utilisateur</label>
-            <input
-              type="text"
-              name="nom_u"
-              value={formData.nom_u}
-              onChange={handleChange}
-              placeholder="ex: alice123"
-              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="flex items-center justify-between">
+              <label htmlFor="nom_u" className="block text-sm/6 font-medium text-gray-900">Nom</label>
+            </div>
+
+            <div className="mt-2">
+              <input
+                id="nom_u"
+                type="text"
+                name="nom_u"
+                required
+                autoComplete="nom_u"
+                onChange={handleChange}
+                value={formData.nom_u}
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between">
+              <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">Adresse email</label>
+            </div>
+
+            <div className="mt-2">
+              <input
+                id="email"
+                type="email"
+                name="email"
+                required
+                autoComplete="email"
+                onChange={handleChange}
+                value={formData.email}
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              />
+            </div>
           </div>
 
-          {/* Email */}
           <div>
-            <label className="text-gray-300 text-sm mb-1 block">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="alice@example.com"
-              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="flex items-center justify-between">
+              <label htmlFor="mot_de_passe" className="block text-sm/6 font-medium text-gray-900">
+                Mot de passe
+              </label>
+
+            </div>
+            <div className="mt-2">
+              <input
+                id="mot_de_passe"
+                type="password"
+                name="mot_de_passe"
+                required
+                autoComplete="current-password"
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                onChange={handleChange}
+                value={formData.mot_de_passe}
+              />
+            </div>
           </div>
 
-          {/* Mot de passe */}
-          <div>
-            <label className="text-gray-300 text-sm mb-1 block">Mot de passe</label>
-            <input
-              type="password"
-              name="mot_de_passe"
-              value={formData.mot_de_passe}
-              onChange={handleChange}
-              placeholder="••••••••"
-              className="w-full bg-gray-800 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="mb-4">
+            <button
+              type="submit"
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              S'inscrire
+            </button>
           </div>
-
-          {/* Bouton */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200"
-          >
-            S'inscrire
-          </button>
-
         </form>
 
-        {/* Lien login */}
-        <p className="text-gray-500 text-center text-sm mt-6">
-          Déjà un compte ?{" "}
-          <a href="/login" className="text-blue-400 hover:underline">Se connecter</a>
+        <p className="mt-10 text-center text-sm/6 text-gray-500 flex justify-between">
+          Déjà membre?
+          <a href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+            Se connecter
+          </a>
         </p>
-
       </div>
     </div>
+
   );
 }
