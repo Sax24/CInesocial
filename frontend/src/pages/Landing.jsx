@@ -1,10 +1,20 @@
 import Navbar from "../components/Navbar";
-import Accueil from "../components/Accueil";
+import Tendance from "../components/Tendance";
+import { useEffect,useState } from "react";
+import { jwtDecode } from "jwt-decode";
+
 export default function Landing() {
+    const [payload ,setPayload] = useState();
+    
+    useEffect(()=>{
+        const token = localStorage.getItem("token");
+            setPayload(jwtDecode(token));
+
+   },[]);
     return (
         <>
-            <Navbar />
-            <Accueil />
+            <Navbar nomUser = {payload?.nom_u}/>
+            <Tendance />
         </>
     )
 }

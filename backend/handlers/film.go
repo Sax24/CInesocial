@@ -69,3 +69,41 @@ func RechercherFilms(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(result)
 }
+
+func GetFilmById(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodGet {
+        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+        return
+    }
+
+    // 1. Récupérer l'id depuis l'URL
+    id := r.URL.Query().Get("id")
+    if id == "" {
+        http.Error(w, "Paramètre 'id' manquant", http.StatusBadRequest)
+        return
+    }
+
+    // 2. Appel TMDB
+    // url := fmt.Sprintf(
+    //     "%smovie/%s?api_key=%s&language=fr-FR",
+    //     os.Getenv("TMDB_API_URL"),id, os.Getenv("TMDB_API_KEY"),
+    // )
+     url := fmt.Sprintf(
+        "%smovie/%s?api_key=%s&language=fr-FR",
+        os.Getenv("TMDB_API_URL"),id, os.Getenv("TMDB_API_KEY"),
+    )
+
+    resp, err := http.Get(url)
+    if err != nil {
+        http.Error(w, "Erreur appel TMDB", http.StatusInternalServerError)
+        return
+    }
+    defer resp.Body.Close()
+
+    // 3. Décoder et renvoyer
+    var result map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&result)
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(result)
+}

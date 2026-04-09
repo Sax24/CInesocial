@@ -37,6 +37,9 @@ func main() {
 	http.HandleFunc("/films/recherche", func(w http.ResponseWriter, r *http.Request) {
 		handlers.RechercherFilms(w, r)
 	})
+	http.HandleFunc("/films/detail", func(w http.ResponseWriter, r *http.Request) {
+		handlers.GetFilmById(w, r)
+	})
 
 	fmt.Println("Serveur démarré sur : http://localhost:8080")
 	err = http.ListenAndServe(":8080", middleware.CORSMiddleware(http.DefaultServeMux))

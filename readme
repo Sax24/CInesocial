@@ -62,9 +62,9 @@ docker run --name cinesocial-db \
   -e POSTGRES_USER=admin \
   -e POSTGRES_PASSWORD=secret \
   -e POSTGRES_DB=cinesocial \
-  -p 5432:5432 \
-  -d postgres
-
+  -p 127.0.0.1:5432:5432 \
+  -v cinesocial_data:/var/lib/postgresql \
+  -d postgres:18
 # 5️Vérifier que PostgreSQL tourne
 docker ps
 docker logs cinesocial-db
@@ -106,7 +106,7 @@ CREATE TABLE notes (
     score INT CHECK (score BETWEEN 1 AND 5),
     cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(utilisateur_id, tmdb_id)
-);  fmt.Println("MDP : ", string(hashedPassword))
+)
 
 CREATE TABLE commentaires (
     id SERIAL PRIMARY KEY,
@@ -124,6 +124,59 @@ CREATE TABLE liste_a_voir (
     UNIQUE(utilisateur_id, tmdb_id)
 );
 
+-- Suivre un utilisateur
+CREATE TABLE abonnements (
+    id SERIAL PRIMARY KEY,
+    suiveur_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    suivi_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(suiveur_id, suivi_id)
+);
+
+-- Liker un commentaire
+CREATE TABLE likes_commentaires (
+    id SERIAL PRIMARY KEY,
+    utilisateur_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    commentaire_id INT REFERENCES commentaires(id) ON DELETE CASCADE,
+    cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(utilisateur_id, commentaire_id)
+);
+```
+
+---
+
+## 🔌 Routes backend à ajouter
+
+| Méthode | Route | Description |
+|---|---|---|
+| POST | `/abonnements` | Suivre un utilisateur |
+| DELETE | `/abonnements?suivi_id={id}` | Ne plus suivre |
+| GET | `/abonnements?user_id={id}` | Liste des abonnements |
+| POST | `/likes` | Liker un commentaire |
+| DELETE | `/likes?commentaire_id={id}` | Unliker |
+| GET | `/profil?user_id={id}` | Page profil public |
+| GET | `/feed` | Fil d'activité |
+
+---
+
+## 📁 Fichiers backend à créer
+```
+handlers/
+    abonnements.go
+    likes.go
+    profil.go
+    feed.go
+```
+
+---
+
+## 🎨 Pages frontend à créer
+```
+pages/
+    Profil.jsx        → page profil public
+    Feed.jsx          → fil d'activité
+
+    
 _______FRONTEND__________
 frontend/
 ├── src/

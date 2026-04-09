@@ -19,6 +19,7 @@ export default function Register() {
         e.preventDefault();
         const response = await register(formData);
         if (response.ok) {
+            console.log("ATOOOOOO");
              navigate("/login"); 
              toast.success("Inscription réussie !");
             console.log("OK ", response);

@@ -19,8 +19,8 @@ export default function Login() {
         const response = await login(formData);
         if (response.ok) {
             const data = await response.json();
-            console.log("TOKEN",data.token);
-            localStorage.setItem("token", data.token); 
+            console.log("TOKEN", data.token);
+            localStorage.setItem("token", data.token);
             toast.success("Connexion réussie !");
             setTimeout(() => navigate("/accueil"), 1500);
         } else {
@@ -28,6 +28,9 @@ export default function Login() {
         }
 
     };
+
+  
+
 
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
