@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
 	"cinesocial/db"
 	"cinesocial/handlers"
 	"cinesocial/middleware"
@@ -55,17 +54,29 @@ func main() {
 	}))
 
 	http.HandleFunc("/notes", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		handlers.GetNote(database, w, r)
-	case http.MethodPost:
-		handlers.AjouterNote(database, w, r)
-	case http.MethodPut:
-		handlers.ModifierNote(database, w, r)
-	default:
-		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
-	}
-}))
+		switch r.Method {
+			case http.MethodGet:
+				handlers.GetNote(database, w, r)
+			case http.MethodPost:
+				handlers.AjouterNote(database, w, r)
+			case http.MethodPut:
+				handlers.ModifierNote(database, w, r)
+			default:
+				http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+			}
+		}))
+	http.HandleFunc("/commentaires", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+			case http.MethodGet:
+				handlers.GetCommentairesFilm(database, w, r)
+			case http.MethodPost:
+				handlers.AjouterCommentaire(database, w, r)
+			case http.MethodDelete:
+				handlers.SupprimerCommentaire(database, w, r)
+			default:
+				http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		}
+	}))
 
 	fmt.Println("Serveur démarré sur : http://localhost:8080")
 	err = http.ListenAndServe(":8080", middleware.CORSMiddleware(http.DefaultServeMux))
