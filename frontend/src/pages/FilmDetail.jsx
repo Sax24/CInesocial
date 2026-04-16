@@ -1,32 +1,99 @@
-
 import { getFilmById } from "../services/films";
+import { getWatchlist, addWatchlist } from "../services/watchlist";
+import { getNote, ajouterNote, modifierNote } from "../services/note";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+
 export default function FilmDetail() {
-  const { id } = useParams()
+  const { id } = useParams();
   const [film, setFilm] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const [erreur, setErreur] = useState("");
+
+  const [noteUtilisateur, setNoteUtilisateur] = useState(0);
+  const [savingNote, setSavingNote] = useState(false);
+  const [noteMessage, setNoteMessage] = useState("");
+
   const commentaires = [
     { id: 1, user: "Sarah", texte: "Super film !", likes: 4 },
     { id: 2, user: "Yanis", texte: "Décevant...", likes: 1 },
   ];
 
-  const getFilm = async () => {
-    try {
-        console.log("DID :", id);
-      const data = await getFilmById(id);
-       console.log("DATA FILM :", data);
-      setFilm(data);
-    } catch (error) {
-      setErreur(error.message || "Erreur lors du chargement du film");
-    } finally {
-      setLoading(false);
-    };
-  }
   useEffect(() => {
-    getFilm();
-  }, [id])
+    async function fetchData() {
+      try {
+        setLoading(true);
+        setErreur("");
+        setNoteMessage("");
+
+        const [filmData, watchlistResponse, noteResponse] = await Promise.all([
+          getFilmById(id),
+          getWatchlist(),
+          getNote(id),
+        ]);
+
+        setFilm(filmData);
+
+        const watchlist = Array.isArray(watchlistResponse)? watchlistResponse : [];
+
+        const dejaDansWatchlist = watchlist.some(
+          (item) => Number(item.tmdb_id) === Number(id)
+        );
+
+        setIsAdded(dejaDansWatchlist);
+        setNoteUtilisateur(noteResponse?.has_note ? Number(noteResponse.score) : 0);
+      } catch (error) {
+        setErreur(error.message || "Erreur lors du chargement du film");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [id]);
+
+  const handleAjoutWatchlist = async () => {
+    try {
+      setAdding(true);
+      setErreur("");
+
+      await addWatchlist(Number(id));
+      setIsAdded(true);
+    } catch (error) {
+      setErreur(error.message ||"Erreur lors de l'ajout du film");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleNoteClick = async (score) => {
+    try {
+      setSavingNote(true);
+      setErreur("");
+      setNoteMessage("");
+
+      try {
+        await ajouterNote(Number(id), score);
+        setNoteMessage("Note ajoutée avec succès");
+      } catch (error) {
+        if (error.status === 409 || error.message?.includes("déjà noté")) {
+          await modifierNote(Number(id), score);
+          setNoteMessage("Note modifiée avec succès");
+        } else {
+          throw error;
+        }
+      }
+
+      const noteResponse = await getNote(id);
+      setNoteUtilisateur(noteResponse?.has_note ? Number(noteResponse.score) : 0);
+    } catch (error) {
+      setErreur(error.message || "Erreur lors de l'enregistrement de la note");
+    } finally {
+      setSavingNote(false);
+    }
+  };
 
   if (loading) {
     return <p className="p-6">Chargement...</p>;
@@ -45,12 +112,14 @@ export default function FilmDetail() {
   const renderStars = (note) => {
     const fullStars = Math.round(note / 2);
     return Array.from({ length: 5 }, (_, index) => (
-      <span key={index} className={index < fullStars ? "text-yellow-400" : "text-gray-300"}>
+      <span
+        key={index}
+        className={index < fullStars ? "text-yellow-400" : "text-gray-300"}
+      >
         ★
       </span>
     ));
   };
-
 
   return (
     <section className="min-h-screen bg-gray-50 px-6 py-10">
@@ -100,21 +169,40 @@ export default function FilmDetail() {
 
               <div className="mt-5 flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-700">
-                  Note moyenne
+                  Note moyenne TMDB
                 </span>
                 <div className="flex text-xl">
                   {renderStars(film.vote_average)}
                 </div>
-                <span className="text-sm text-gray-500">
-                  ({noteSur5}/5)
-                </span>
+                <span className="text-sm text-gray-500">({noteSur5}/5)</span>
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <button className="rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition duration-300 hover:bg-violet-700 hover:shadow-lg">
-                Ajouter à la watchlist
-              </button>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {isAdded ? (
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 shadow-sm">
+                  <svg
+                    className="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  Déjà dans votre watchlist
+                </div>
+              ) : (
+                <button
+                  className="rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-md transition duration-300 hover:bg-violet-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
+                  onClick={handleAjoutWatchlist}
+                  disabled={adding}
+                >
+                  {adding ? "Ajout en cours..." : "Ajouter à la watchlist"}
+                </button>
+              )}
 
               {film.homepage && (
                 <a
@@ -131,18 +219,45 @@ export default function FilmDetail() {
         </div>
 
         <div className="border-t border-gray-200 px-6 py-5 md:px-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Ta note</h2>
-            <div className="flex gap-2 text-3xl text-yellow-400">
-              <button className="transition hover:scale-110">★</button>
-              <button className="transition hover:scale-110">★</button>
-              <button className="transition hover:scale-110">★</button>
-              <button className="transition hover:scale-110">★</button>
-              <button className="text-gray-300 transition hover:scale-110 hover:text-yellow-400">
-                ★
-              </button>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Votre note</h2>
+
+            <div className="flex items-center gap-3">
+              <div className="flex gap-1 text-3xl">
+                {[1, 2, 3, 4, 5].map((score) => (
+                  <button
+                    key={score}
+                    type="button"
+                    onClick={() => handleNoteClick(score)}
+                    disabled={savingNote}
+                    className={`transition hover:scale-110 ${
+                      score <= noteUtilisateur
+                        ? "text-yellow-400"
+                        : "text-gray-300 hover:text-yellow-400"
+                    } ${savingNote ? "cursor-not-allowed opacity-70" : ""}`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+
+              <span className="text-sm text-gray-500">
+                {noteUtilisateur > 0
+                  ? `${noteUtilisateur}/5`
+                  : "Pas encore noté"}
+              </span>
             </div>
           </div>
+
+          {savingNote && (
+            <p className="mt-2 text-sm text-gray-500">
+              Enregistrement de la note...
+            </p>
+          )}
+
+          {noteMessage && (
+            <p className="mt-2 text-sm text-green-600">{noteMessage}</p>
+          )}
         </div>
 
         <div className="border-t border-gray-200 px-6 py-6 md:px-8">

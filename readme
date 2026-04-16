@@ -42,55 +42,13 @@ BDD : SQLite ou PostgreSQL pour stocker users, notes, commentaires
 
 
 ___________________________ DOCKER ____________________________________
-# 1️⃣ Vérifier que Docker tourne
-sudo systemctl status docker
-# Si Docker n’est pas actif :
-sudo systemctl start docker
-
-# 2️⃣ Vérifier que ton utilisateur peut utiliser Docker
-groups
-# Si tu ne vois pas 'docker' :
-sudo usermod -aG docker $USER
-# Recharge la session (ou ferme/reconnecte)
-newgrp docker
-
-# 3️Tester Docker
-docker ps
-
-# 4️Lancer le conteneur PostgreSQL
-docker run --name cinesocial-db \
-  -e POSTGRES_USER=admin \
-  -e POSTGRES_PASSWORD=secret \
-  -e POSTGRES_DB=cinesocial \
-  -p 127.0.0.1:5432:5432 \
-  -v cinesocial_data:/var/lib/postgresql \
-  -d postgres:18
-# 5️Vérifier que PostgreSQL tourne
-docker ps
-docker logs cinesocial-db
-
-# 6️⃣ Arrêter / relancer / supprimer le conteneur
-docker stop cinesocial-db
-docker start cinesocial-db
-docker rm -f cinesocial-db
-
- Connexion à la DB pour ton app
-Host : localhost
-Port : 5432
-User : admin
-Password : secret
-Database : cinesocial
-
-Lancer le docker : docker start cinesocial-db
-docker ps
-docker logs cinesocial-db
-
-____CLONER LE PROJET PAR DOKCER__________
-docker-compose up --build 
+sudo docker compose ps
+sudo docker compose up -d
+sudo docker compose ps
 
 
 
-
+___________________________ TABLES ____________________________________
 CREATE TABLE utilisateurs (
     id SERIAL PRIMARY KEY,
     nom_u VARCHAR(50) UNIQUE NOT NULL,
@@ -121,8 +79,10 @@ CREATE TABLE liste_a_voir (
     utilisateur_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
     tmdb_id INT NOT NULL,
     ajoute_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(utilisateur_id, tmdb_id)
-);
+    UNIQUE(utilisateur_id, tmdb_id),
+    statut VARCHAR(20) NOT NULL DEFAULT 'a_voir',
+    CHECK (statut IN ('a_voir', 'en_cours', 'vu'))
+)
 
 -- Suivre un utilisateur
 CREATE TABLE abonnements (
@@ -145,7 +105,7 @@ CREATE TABLE likes_commentaires (
 
 ---
 
-## 🔌 Routes backend à ajouter
+## Routes backend à ajouter
 
 | Méthode | Route | Description |
 |---|---|---|
@@ -157,95 +117,3 @@ CREATE TABLE likes_commentaires (
 | GET | `/profil?user_id={id}` | Page profil public |
 | GET | `/feed` | Fil d'activité |
 
----
-
-## 📁 Fichiers backend à créer
-```
-handlers/
-    abonnements.go
-    likes.go
-    profil.go
-    feed.go
-```
-
----
-
-## 🎨 Pages frontend à créer
-```
-pages/
-    Profil.jsx        → page profil public
-    Feed.jsx          → fil d'activité
-
-    
-_______FRONTEND__________
-frontend/
-├── src/
-│   ├── components/        → composants réutilisables
-│   │   ├── Navbar.jsx
-│   │   └── FilmCard.jsx
-│   │
-│   ├── pages/             → une page = un fichier
-│   │   ├── Register.jsx   ← inscription ici
-│   │   ├── Login.jsx
-│   │   ├── Accueil.jsx
-│   │   ├── Film.jsx
-│   │   └── Watchlist.jsx
-│   │
-│   ├── services/          → appels API vers ton backend
-│   │   ├── auth.js        → login, register
-│   │   └── films.js       → tendance, recherche
-│   │
-│   ├── context/           → état global (utilisateur connecté)
-│   │   └── AuthContext.jsx
-│   │
-│   ├── App.jsx            → routes de l'application
-│   └── main.jsx
-
-
-🎬 Structure de la page d'accueil
-1. 🔝 Navbar
-
-Logo CinéSocial
-Barre de recherche (centrée)
-Bouton Watchlist + avatar utilisateur
-
-
-2. 🎯 Hero Section
-
-Titre accrocheur : "Découvrez, notez, partagez"
-Sous-titre court
-Fond avec une affiche de film en arrière-plan (image TMDB)
-
-
-3. 🔥 Films Tendance
-
-Titre de section : "Tendances du moment"
-Grille de cartes films (affiche + titre + note moyenne)
-Chaque carte cliquable → page détail du film
-
-
-4. 💬 Activité Récente
-
-Titre : "Ce que dit la communauté"
-Liste des derniers commentaires des utilisateurs
-Avatar + nom + film concerné + extrait du commentaire
-
-
-5. 🔍 Résultats de recherche
-
-Apparaît dynamiquement quand l'utilisateur tape dans la navbar
-Remplace temporairement le contenu principal
-
-
-📐 Layout général
-┌─────────────────────────────┐
-│         NAVBAR              │
-├─────────────────────────────┤
-│         HERO                │
-├─────────────────────────────┤
-│      FILMS TENDANCE         │
-│  [card][card][card][card]   │
-├─────────────────────────────┤
-│     ACTIVITÉ RÉCENTE        │
-│  [comment][comment]...      │
-└─────────────────────────────┘

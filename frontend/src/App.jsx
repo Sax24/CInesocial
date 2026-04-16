@@ -7,6 +7,7 @@ import Landing from "./pages/Landing";
 import  ProtectedRoute from "./components/ProtectedRoute";
 import  PublicRoute from "./components/PublicRoute";
 import FilmDetail from "./pages/FilmDetail";
+import Actualite from "./components/Actualite";
 
 function App() {
   return (
@@ -15,13 +16,16 @@ function App() {
       <Routes>
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login2 />} />
+          <Route path="/register" element={<Register />} />
         </Route>
         <Route element={<ProtectedRoute />}>
           <Route path="/accueil" element={<Landing />} />
-        </Route>
-        <Route path="/" element={<Navigate to="/register" />} />
-        <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Navigate to="/accueil" />} />
         <Route path="/film/details/:id" element={<FilmDetail />} />
+         <Route path="/watchlist" element={<Landing />} />
+          <Route path="/actualites" element={<Actualite />} />
+        </Route>
+        
       </Routes>
     </BrowserRouter>
   );

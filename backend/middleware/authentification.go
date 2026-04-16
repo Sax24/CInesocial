@@ -20,7 +20,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
         // 2. Extraire le token (enlever "Bearer ")
         tokenString :=strings.TrimPrefix(authHeader, "Bearer ")
-
+        
         // 3. Vérifier et décoder le token
         token, err :=jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
             return []byte(os.Getenv("JWT_SECRET")), nil

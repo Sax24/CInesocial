@@ -17,6 +17,8 @@ export default function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("FORMADATA: ",formData );
+        
         const response = await register(formData);
         if (response.ok) {
             console.log("ATOOOOOO");

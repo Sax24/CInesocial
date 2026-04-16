@@ -1,17 +1,34 @@
-version: '3.8'
+# version: '3.8'
+
+# services:
+#   db:
+#     image: postgres
+#     container_name: cinesocial-db
+#     environment:
+#       POSTGRES_USER: ${DB_USER}
+#       POSTGRES_PASSWORD: ${DB_PASSWORD}
+#       POSTGRES_DB: ${DB_NAME}
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
+
+# volumes:
+#   pgdata:
 
 services:
   db:
-    image: postgres
+    image: postgres:18
     container_name: cinesocial-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - cinesocial_data:/var/lib/postgresql
 
 volumes:
-  pgdata:
+  cinesocial_data:

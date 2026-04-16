@@ -1,5 +1,9 @@
+import { getValidToken} from "../utils/auth";
 export async function getFilmsTendances() {
-  const token = localStorage.getItem("token");
+    const token = getValidToken();
+  if (!token) {
+    throw new Error("Session expirée");
+  }
 
   const response = await fetch("http://localhost:8080/films/tendances", {
     method: "GET",
@@ -17,7 +21,11 @@ export async function getFilmsTendances() {
 }
 
 export async function getFilmById(id) {
-  const token = localStorage.getItem("token");
+    const token = getValidToken();
+  if (!token) {
+    throw new Error("Session expirée");
+  }
+
 
   const response = await fetch(`http://localhost:8080//films/detail?id=${id}`, {
     method: "GET",

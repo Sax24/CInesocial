@@ -4,6 +4,8 @@ export async function register(formData) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(formData),
   });
+  console.log("RESPONSE REGISTER: ",response);
+  
   return response;
 }
 

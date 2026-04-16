@@ -71,6 +71,7 @@ func RechercherFilms(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetFilmById(w http.ResponseWriter, r *http.Request) {
+    
     if r.Method != http.MethodGet {
         http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
         return

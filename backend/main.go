@@ -41,6 +41,32 @@ func main() {
 		handlers.GetFilmById(w, r)
 	})
 
+	http.HandleFunc("/watchlist", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+			case http.MethodGet:
+				handlers.GetWatchlist(database, w, r)
+			case http.MethodPost:
+				handlers.AjouterWatchlist(database, w, r)
+			case http.MethodPut:
+				handlers.ModifierStatutWatchlist(database, w, r)
+			case http.MethodDelete:
+				handlers.SupprimerWatchlist(database, w, r)
+		}
+	}))
+
+	http.HandleFunc("/notes", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		handlers.GetNote(database, w, r)
+	case http.MethodPost:
+		handlers.AjouterNote(database, w, r)
+	case http.MethodPut:
+		handlers.ModifierNote(database, w, r)
+	default:
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+	}
+}))
+
 	fmt.Println("Serveur démarré sur : http://localhost:8080")
 	err = http.ListenAndServe(":8080", middleware.CORSMiddleware(http.DefaultServeMux))
 	if err != nil {
