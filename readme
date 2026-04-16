@@ -71,7 +71,8 @@ CREATE TABLE commentaires (
     utilisateur_id INT REFERENCES utilisateurs(id) ON DELETE CASCADE,
     tmdb_id INT NOT NULL,
     contenu TEXT NOT NULL,
-    cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    parent_commentaire_id INT REFERENCES commentaires(id) ON DELETE CASCADE;
 );
 
 CREATE TABLE liste_a_voir (
@@ -101,6 +102,10 @@ CREATE TABLE likes_commentaires (
     cree_le TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(utilisateur_id, commentaire_id)
 );
+
+CREATE INDEX idx_commentaires_tmdb_id ON commentaires(tmdb_id);
+CREATE INDEX idx_commentaires_parent_id ON commentaires(parent_commentaire_id);
+CREATE INDEX idx_likes_commentaires_commentaire_id ON likes_commentaires(commentaire_id);
 ```
 
 ---

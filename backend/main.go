@@ -78,6 +78,24 @@ func main() {
 		}
 	}))
 
+	http.HandleFunc("/commentaires/reponses", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+			case http.MethodPost:
+				handlers.AjouterReponseCommentaire(database, w, r)
+			default:
+				http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		}
+	}))
+
+	http.HandleFunc("/commentaires/reactions", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+			case http.MethodPost:
+				handlers.ToggleReactionCommentaire(database, w, r)
+			default:
+				http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		}
+	}))
+
 	fmt.Println("Serveur démarré sur : http://localhost:8080")
 	err = http.ListenAndServe(":8080", middleware.CORSMiddleware(http.DefaultServeMux))
 	if err != nil {
