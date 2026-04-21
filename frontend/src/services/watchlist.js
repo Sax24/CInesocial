@@ -1,11 +1,12 @@
 import { getValidToken} from "../utils/auth";
+const API_URL = import.meta.env.VITE_API_URL;
 export async function getWatchlist() {
     const token = getValidToken();
   if (!token) {
     throw new Error("Session expirée");
   }
   
-  const response = await fetch("http://localhost:8080/watchlist", {
+  const response = await fetch(API_URL+"/watchlist", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -27,7 +28,7 @@ export async function updateWatchlistStatut(tmdbId, statut) {
   }
 
 
-  const response = await fetch("http://localhost:8080/watchlist", {
+  const response = await fetch(API_URL+"/watchlist", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -49,7 +50,7 @@ export async function addWatchlist(tmdbId) {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/watchlist", {
+  const response = await fetch(API_URL+"/watchlist", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -68,7 +69,7 @@ export async function addWatchlist(tmdbId) {
 export async function deleteWatchlist(tmdbId) {
   const token = localStorage.getItem("token");
   const response = await fetch(
-    `http://localhost:8080/watchlist?tmdb_id=${tmdbId}`,
+    API_URL+`/watchlist?tmdb_id=${tmdbId}`,
     {
       method: "DELETE",
       headers: {

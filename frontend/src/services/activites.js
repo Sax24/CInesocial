@@ -1,7 +1,8 @@
 import { getFilmById } from "./films";
 
+const API_URL = import.meta.env.VITE_API_URL;
 export async function getActivites() {
-  const response = await fetch("http://localhost:8080/activites", {
+  const response = await fetch(API_URL+ "/activites", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

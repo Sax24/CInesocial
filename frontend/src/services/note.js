@@ -1,6 +1,6 @@
 import { getValidToken } from "../utils/auth";
 
-
+const API_URL = import.meta.env.VITE_API_URL;
 export async function getNote(tmdb_id) {
   const token = getValidToken();
 
@@ -8,7 +8,7 @@ export async function getNote(tmdb_id) {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch(`http://localhost:8080/notes?tmdb_id=${tmdb_id}`, {
+  const response = await fetch(API_URL+`/notes?tmdb_id=${tmdb_id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export async function ajouterNote(tmdb_id, score) {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/notes", {
+  const response = await fetch(API_URL+"/notes", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -60,7 +60,7 @@ export async function modifierNote(tmdb_id, score) {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/notes", {
+  const response = await fetch(API_URL+"/notes", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

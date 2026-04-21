@@ -1,5 +1,8 @@
 echo ".env" >> .gitignore
-
+frontend/.env
+frontend/.env.*
+backend/.env
+backend/.env.*
 
 # Binaires compilés
 *.exe

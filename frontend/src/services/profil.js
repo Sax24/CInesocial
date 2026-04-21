@@ -2,6 +2,7 @@ import { getValidToken } from "../utils/auth";
 import { getWatchlist } from "./watchlist";
 import { getFilmById } from "./films";
 
+const API_URL = import.meta.env.VITE_API_URL;
 function decodeJwt(token) {
   try {
     const payload = token.split(".")[1];
@@ -16,7 +17,7 @@ function decodeJwt(token) {
 }
 
 async function getUtilisateurs() {
-  const response = await fetch("http://localhost:8080/get/utilisateurs", {
+  const response = await fetch(API_URL+"/get/utilisateurs", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -164,7 +165,7 @@ async function getMesCommentaires() {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/profil/commentaires", {
+  const response = await fetch(API_URL+"/profil/commentaires", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -189,7 +190,7 @@ async function getMesNotes() {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/profil/notes", {
+  const response = await fetch(API_URL+"/profil/notes", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

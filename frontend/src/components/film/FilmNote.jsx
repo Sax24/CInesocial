@@ -39,30 +39,26 @@ export default function FilmNote({ filmId }) {
   }, [filmId]);
 
   const handleNoteClick = async (score) => {
-    try {
-      setSavingNote(true);
-      setErreur("");
-      setNoteMessage("");
+  try {
+    setSavingNote(true);
+    setErreur("");
+    setNoteMessage("");
 
-      try {
-        await ajouterNote(Number(filmId), score);
-        setNoteMessage("Note ajoutée avec succès");
-      } catch (error) {
-        if (error.status === 409 || error.message?.includes("déjà noté")) {
-          await modifierNote(Number(filmId), score);
-          setNoteMessage("Note modifiée avec succès");
-        } else {
-          throw error;
-        }
-      }
-
-      setNoteUtilisateur(score);
-    } catch (error) {
-      setErreur(error.message || "Erreur lors de l'enregistrement de la note");
-    } finally {
-      setSavingNote(false);
+    if (noteUtilisateur > 0) {
+      await modifierNote(Number(filmId), score);
+      setNoteMessage("Note modifiée avec succès");
+    } else {
+      await ajouterNote(Number(filmId), score);
+      setNoteMessage("Note ajoutée avec succès");
     }
-  };
+
+    setNoteUtilisateur(score);
+  } catch (error) {
+    setErreur(error.message || "Erreur lors de l'enregistrement de la note");
+  } finally {
+    setSavingNote(false);
+  }
+};
 
   return (
     <div className="border-t border-gray-200 px-6 py-5 md:px-8">

@@ -1,11 +1,13 @@
 import { getValidToken} from "../utils/auth";
+const API_URL = import.meta.env.VITE_API_URL;
+
 export async function getFilmsTendances() {
     const token = getValidToken();
   if (!token) {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/films/tendances", {
+  const response = await fetch(API_URL+"/films/tendances", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -27,7 +29,7 @@ export async function getFilmById(id) {
   }
 
 
-  const response = await fetch(`http://localhost:8080//films/detail?id=${id}`, {
+  const response = await fetch(API_URL+`/films/detail?id=${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -50,7 +52,7 @@ export async function searchFilms(query) {
   }
 
   const response = await fetch(
-    `http://localhost:8080/films/recherche?q=${encodeURIComponent(query)}`,
+    API_URL+`/films/recherche?q=${encodeURIComponent(query)}`,
     {
       method: "GET",
       headers: {

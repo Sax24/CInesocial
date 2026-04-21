@@ -1,5 +1,6 @@
 import { getValidToken } from "../utils/auth";
 
+const API_URL = import.meta.env.VITE_API_URL;
 export async function getCommentairesByFilm(tmdb_id) {
   const token = getValidToken();
 
@@ -8,7 +9,7 @@ export async function getCommentairesByFilm(tmdb_id) {
   }
 
   const response = await fetch(
-    `http://localhost:8080/commentaires?tmdb_id=${tmdb_id}`,
+    `${API_URL}/commentaires?tmdb_id=${tmdb_id}`,
     {
       method: "GET",
       headers: {
@@ -33,7 +34,7 @@ export async function ajouterCommentaire(tmdb_id, contenu) {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/commentaires", {
+  const response = await fetch(API_URL+"/commentaires", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -61,7 +62,7 @@ export async function supprimerCommentaire(commentaireId) {
   }
 
   const response = await fetch(
-    `http://localhost:8080/commentaires?id=${commentaireId}`,
+    API_URL+`/commentaires?id=${commentaireId}`,
     {
       method: "DELETE",
       headers: {
@@ -86,7 +87,7 @@ export async function toggleReactionCommentaire(commentaireId) {
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/commentaires/reactions", {
+  const response = await fetch(API_URL+"/commentaires/reactions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -116,7 +117,7 @@ export async function ajouterReponseCommentaire(
     throw new Error("Session expirée");
   }
 
-  const response = await fetch("http://localhost:8080/commentaires/reponses", {
+  const response = await fetch(API_URL+"/commentaires/reponses", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
