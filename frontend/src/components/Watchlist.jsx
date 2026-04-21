@@ -186,28 +186,7 @@ export default function Watchlist() {
               </p>
             </div>
 
-            <div className="w-full md:w-80">
-              <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="m20 20-3.5-3.5" />
-                </svg>
-
-                <input
-                  type="text"
-                  placeholder="Rechercher un film..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
-                />
-              </div>
-            </div>
+            
           </div>
 
           <div className="mb-8 flex flex-wrap gap-3">

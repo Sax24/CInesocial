@@ -7,7 +7,7 @@ import Landing from "./pages/Landing";
 import  ProtectedRoute from "./components/ProtectedRoute";
 import  PublicRoute from "./components/PublicRoute";
 import FilmDetail from "./pages/FilmDetail";
-import Actualite from "./components/Actualite";
+import Profil from "./pages/Profil";
 
 function App() {
   return (
@@ -21,9 +21,11 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/accueil" element={<Landing />} />
           <Route path="/" element={<Navigate to="/accueil" />} />
-        <Route path="/film/details/:id" element={<FilmDetail />} />
+          <Route path="/film/details/:id" element={<FilmDetail />} />
          <Route path="/watchlist" element={<Landing />} />
-          <Route path="/actualites" element={<Actualite />} />
+          <Route path="/actualites" element={<Landing />} />
+          <Route path="/profil" element={<Profil />} />
+          <Route path="/recherche" element={<Landing />} />
         </Route>
         
       </Routes>

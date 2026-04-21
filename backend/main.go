@@ -96,9 +96,31 @@ func main() {
 		}
 	}))
 
+	http.HandleFunc("/profil/commentaires", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		handlers.GetMesCommentaires(database, w, r)
+	default:
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+	}
+	}))
+	http.HandleFunc("/profil/notes", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			handlers.GetMesNotes(database, w, r)
+		default:
+			http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		}
+	}))
+
+	http.HandleFunc("/activites", func(w http.ResponseWriter, r *http.Request) {
+	handlers.GetActivites(database, w, r)
+	})
+
 	fmt.Println("Serveur démarré sur : http://localhost:8080")
 	err = http.ListenAndServe(":8080", middleware.CORSMiddleware(http.DefaultServeMux))
 	if err != nil {
 		fmt.Println("Erreur serveur :", err)
 	}
 }
+

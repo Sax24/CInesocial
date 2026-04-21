@@ -429,3 +429,72 @@ func SupprimerCommentaire(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		"message": "Commentaire supprimé avec succès",
 	})
 }
+
+func GetMesCommentaires(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		http.Error(w, "Utilisateur non authentifié", http.StatusUnauthorized)
+		return
+	}
+
+	type MonCommentaire struct {
+		ID     int    `json:"id"`
+		TmdbID int    `json:"tmdb_id"`
+		Contenu string `json:"contenu"`
+		CreeLe string `json:"cree_le"`
+		Likes  int    `json:"likes"`
+	}
+
+	rows, err := db.Query(`
+		SELECT
+			c.id,
+			c.tmdb_id,
+			c.contenu,
+			c.cree_le,
+			COUNT(lc.id) AS likes
+		FROM commentaires c
+		LEFT JOIN likes_commentaires lc ON lc.commentaire_id = c.id
+		WHERE c.utilisateur_id = $1
+		GROUP BY c.id, c.tmdb_id, c.contenu, c.cree_le
+		ORDER BY c.cree_le DESC
+		LIMIT 10
+	`, userID)
+	if err != nil {
+		http.Error(w, "Erreur lors de la récupération des commentaires du profil", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var commentaires []MonCommentaire
+
+	for rows.Next() {
+		var c MonCommentaire
+		var creeLe time.Time
+
+		err := rows.Scan(&c.ID, &c.TmdbID, &c.Contenu, &creeLe, &c.Likes)
+		if err != nil {
+			http.Error(w, "Erreur lors de la lecture des commentaires du profil", http.StatusInternalServerError)
+			return
+		}
+
+		c.CreeLe = creeLe.Format(time.RFC3339)
+		commentaires = append(commentaires, c)
+	}
+
+	if err := rows.Err(); err != nil {
+		http.Error(w, "Erreur lors de la lecture des commentaires du profil", http.StatusInternalServerError)
+		return
+	}
+
+	if commentaires == nil {
+		commentaires = []MonCommentaire{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(commentaires)
+}

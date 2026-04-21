@@ -13,18 +13,9 @@ export default function Tendance() {
     const filmsParVue = 4;
 
     const handleClick = (id) => {
-        navigate("/film/details/"+ id)
+        navigate("/film/details/" + id)
     };
 
-    const toggleWatchlist = (e, filmId) => {
-        e.stopPropagation();
-
-        setWatchlist((prev) =>
-            prev.includes(filmId)
-                ? prev.filter((id) => id !== filmId)
-                : [...prev, filmId]
-        );
-    };
 
     useEffect(() => {
         async function fetchFilms() {
@@ -118,30 +109,6 @@ export default function Tendance() {
                                             />
 
                                             <div className="absolute inset-0 bg-linear-to-t from-black via-black/30 to-transparent" />
-
-                                            <button
-                                                type="button"
-                                                onClick={(e) => toggleWatchlist(e, item.id)}
-                                                className={`absolute right-3 top-3 z-10 flex items-center justify-center rounded-full border p-2 backdrop-blur-md transition-all duration-300 hover:scale-110 ${isInWatchlist
-                                                        ? "border-violet-400/40 bg-violet-500 text-white shadow-lg shadow-violet-500/30"
-                                                        : "border-white/20 bg-black/30 text-white/90"
-                                                    }`}
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    fill={isInWatchlist ? "currentColor" : "none"}
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    className="h-5 w-5"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M17 3H7a2 2 0 0 0-2 2v16l7-4 7 4V5a2 2 0 0 0-2-2z"
-                                                    />
-                                                </svg>
-                                            </button>
 
                                             <div className="absolute bottom-0 left-0 w-full p-4">
                                                 <h3 className="text-lg font-semibold text-white">

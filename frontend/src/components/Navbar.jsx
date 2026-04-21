@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import photo from "../assets/cinesocial.png";
 
 function NewsIcon() {
@@ -38,10 +40,48 @@ function WatchlistIcon() {
 }
 
 export default function Navbar({ nomUser }) {
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+  const valeur = query.trim();
+
+  const timeout = setTimeout(() => {
+    if (!valeur) {
+      if (location.pathname === "/recherche") {
+        navigate("/accueil", { replace: true });
+      }
+      return;
+    }
+
+    const target = `/recherche?q=${encodeURIComponent(valeur)}`;
+    const current = `${location.pathname}${location.search}`;
+
+    if (current !== target) {
+      navigate(target, { replace: true });
+    }
+  }, 350);
+
+  return () => clearTimeout(timeout);
+}, [query, navigate, location.pathname, location.search]);
+
+  const handleChange = (e) => {
+    setQuery(e.target.value);
+  };
+
+  const handleFocus = () => {
+    if (query.trim() && location.pathname !== "/recherche") {
+      navigate(`/recherche?q=${encodeURIComponent(query.trim())}`, {
+        replace: true,
+      });
+    }
+  };
+
   return (
     <nav className="sticky top-0 z-50 mb-3 flex items-center justify-between border-b border-gray-200/80 bg-white/90 px-6 py-2 shadow-md backdrop-blur-md transition-all">
-      <a
-        href="/accueil"
+      <Link
+        to="/accueil"
         className="rounded-2xl transition duration-300 hover:scale-105"
       >
         <img
@@ -49,35 +89,38 @@ export default function Navbar({ nomUser }) {
           alt="Logo CineSocial"
           className="h-auto w-28 rounded-lg"
         />
-      </a>
+      </Link>
 
       <div className="flex items-center gap-4 lg:gap-6">
         <div className="flex items-center gap-3">
-          <a
-            href="/actualites"
+          <Link
+            to="/actualites"
             className="group flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-gray-700 transition duration-300 hover:bg-violet-50 hover:text-violet-600"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white p-2 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg">
               <NewsIcon />
             </span>
             <span className="hidden sm:inline">Actualités</span>
-          </a>
+          </Link>
 
-          <a
-            href="/watchlist"
+          <Link
+            to="/watchlist"
             className="group flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-gray-700 transition duration-300 hover:bg-violet-50 hover:text-violet-600"
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white p-2 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg">
               <WatchlistIcon />
             </span>
             <span className="hidden sm:inline">Watchlist</span>
-          </a>
+          </Link>
         </div>
 
         <div className="hidden lg:flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 shadow-sm transition duration-300 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-100 hover:shadow-md">
           <input
             className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
             type="text"
+            value={query}
+            onChange={handleChange}
+            onFocus={handleFocus}
             placeholder="Rechercher des films"
           />
           <svg
@@ -108,12 +151,12 @@ export default function Navbar({ nomUser }) {
       </div>
 
       <div className="flex items-center gap-3">
-        <p className="hidden md:block text-sm text-gray-700">
+        <p className="hidden text-sm text-gray-700 md:block">
           Bonjour,{" "}
           <span className="font-semibold text-violet-600">{nomUser}</span>
         </p>
 
-        <a href="#" className="group">
+        <Link to="/profil" className="group">
           <div className="flex w-11 items-center justify-center rounded-full border border-gray-200 bg-white p-2 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +179,7 @@ export default function Navbar({ nomUser }) {
               </g>
             </svg>
           </div>
-        </a>
+        </Link>
       </div>
     </nav>
   );

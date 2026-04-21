@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useLocation } from "react-router-dom";
 import Watchlist from "../components/Watchlist";
+import Actualite from "../components/Actualite";
+import Recherche from "../components/Recherche";
 
 export default function Landing() {
     const [payload, setPayload] = useState();
@@ -15,8 +17,10 @@ export default function Landing() {
         console.log("PATHNAME: ",location.pathname  )
 
     }, []);
+    
      const contenu =
-    location.pathname === "/watchlist" ? <Watchlist /> : <Tendance />;
+    location.pathname === "/watchlist" ? <Watchlist /> : ( location.pathname === "/actualites" ?  <Actualite />
+    :(location.pathname === "/recherche" ? <Recherche /> :<Tendance />));
 
     return (
         <>

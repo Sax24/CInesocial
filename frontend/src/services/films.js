@@ -42,3 +42,28 @@ export async function getFilmById(id) {
   return response.json();
 }
 
+export async function searchFilms(query) {
+  const token = getValidToken();
+
+  if (!token) {
+    throw new Error("Session expirée");
+  }
+
+  const response = await fetch(
+    `http://localhost:8080/films/recherche?q=${encodeURIComponent(query)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Erreur lors de la recherche des films");
+  }
+
+  return response.json();
+}
+

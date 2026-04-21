@@ -204,3 +204,64 @@ func GetNote(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		"created_at": creeLe,
 	})
 }
+
+// Récupérer les notes de l'utilisateur connecté
+func GetMesNotes(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID, err := getUserIDFromContext(r)
+	if err != nil {
+		http.Error(w, "Utilisateur non authentifié", http.StatusUnauthorized)
+		return
+	}
+
+	type MaNote struct {
+		ID     int    `json:"id"`
+		TmdbID int    `json:"tmdb_id"`
+		Score  int    `json:"score"`
+		CreeLe string `json:"cree_le"`
+	}
+
+	rows, err := db.Query(`
+		SELECT id, tmdb_id, score, cree_le
+		FROM notes
+		WHERE utilisateur_id = $1
+		ORDER BY cree_le DESC
+	`, userID)
+	if err != nil {
+		http.Error(w, "Erreur lors de la récupération des notes du profil", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var notes []MaNote
+
+	for rows.Next() {
+		var n MaNote
+		var creeLe time.Time
+
+		err := rows.Scan(&n.ID, &n.TmdbID, &n.Score, &creeLe)
+		if err != nil {
+			http.Error(w, "Erreur lors de la lecture des notes du profil", http.StatusInternalServerError)
+			return
+		}
+
+		n.CreeLe = creeLe.Format(time.RFC3339)
+		notes = append(notes, n)
+	}
+
+	if err := rows.Err(); err != nil {
+		http.Error(w, "Erreur lors de la lecture des notes du profil", http.StatusInternalServerError)
+		return
+	}
+
+	if notes == nil {
+		notes = []MaNote{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(notes)
+}
