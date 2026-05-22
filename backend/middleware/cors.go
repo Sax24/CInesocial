@@ -3,7 +3,6 @@ package middleware
 import (
 	"net/http"
 	"os"
-	"strings"
 )
 
 func CORSMiddleware(next http.Handler) http.Handler {
