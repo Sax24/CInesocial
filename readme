@@ -110,15 +110,4 @@ CREATE INDEX idx_likes_commentaires_commentaire_id ON likes_commentaires(comment
 
 ---
 
-## Routes backend à ajouter
-
-| Méthode | Route | Description |
-|---|---|---|
-| POST | `/abonnements` | Suivre un utilisateur |
-| DELETE | `/abonnements?suivi_id={id}` | Ne plus suivre |
-| GET | `/abonnements?user_id={id}` | Liste des abonnements |
-| POST | `/likes` | Liker un commentaire |
-| DELETE | `/likes?commentaire_id={id}` | Unliker |
-| GET | `/profil?user_id={id}` | Page profil public |
-| GET | `/feed` | Fil d'activité |
 
