@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"net/http"
 	"cinesocial/db"
@@ -117,18 +118,25 @@ func main() {
     handlers.GetProfilPublic(database, w, r)
 })
 
-http.HandleFunc("/utilisateurs/commentaires", func(w http.ResponseWriter, r *http.Request) {
-    handlers.GetCommentairesUtilisateur(database, w, r)
-})
+	http.HandleFunc("/utilisateurs/commentaires", func(w http.ResponseWriter, r *http.Request) {
+		handlers.GetCommentairesUtilisateur(database, w, r)
+	})
 
 	http.HandleFunc("/activites", func(w http.ResponseWriter, r *http.Request) {
 	handlers.GetActivites(database, w, r)
 	})
 
-	fmt.Println("Serveur démarré sur : http://localhost:8080")
-	err = http.ListenAndServe(":8080", middleware.CORSMiddleware(http.DefaultServeMux))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	fmt.Println("Serveur démarré sur : "+port)
+	err = http.ListenAndServe(":"+port, middleware.CORSMiddleware(http.DefaultServeMux))
+
+
 	if err != nil {
 		fmt.Println("Erreur serveur :", err)
 	}
+
 }
 
