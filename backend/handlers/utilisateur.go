@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"log"
 	"unicode"
 	"unicode/utf8"
 	"github.com/lib/pq"
@@ -26,6 +27,7 @@ func capitalizeFirstLetter(s string) string {
 
 func CreerUtilisateur(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
+		log.Println("Méthode non autorisée:", http.StatusMethodNotAllowed)
 		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
 		return
 	}
@@ -33,6 +35,8 @@ func CreerUtilisateur(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	var u models.Utilisateur
 	err := json.NewDecoder(r.Body).Decode(&u)
 	if err != nil {
+		log.Println("JSON invalide", http.StatusBadRequest)
+		
 		http.Error(w, "JSON invalide", http.StatusBadRequest)
 		return
 	}
@@ -42,12 +46,14 @@ func CreerUtilisateur(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	u.MotDePasse = strings.TrimSpace(u.MotDePasse)
 
 	if u.NomUtilisateur == "" || u.Email == "" || u.MotDePasse == "" {
+		log.Println(w, "Erreur hash mot de passe", http.StatusInternalServerError)
 		http.Error(w, "Tous les champs sont obligatoires", http.StatusBadRequest)
 		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.MotDePasse), bcrypt.DefaultCost)
 	if err != nil {
+		log.Println("Erreur hash mot de passe", err)
 		http.Error(w, "Erreur hash mot de passe", http.StatusInternalServerError)
 		return
 	}
@@ -57,6 +63,7 @@ func CreerUtilisateur(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		u.NomUtilisateur, u.Email, string(hashedPassword),
 	)
 	if err != nil {
+		log.Println("Erreur insertion utilisateur :", err)
 		fmt.Println("Erreur insertion utilisateur :", err)
 
 		if pqErr, ok := err.(*pq.Error); ok {
