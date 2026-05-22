@@ -1,20 +1,27 @@
-package db
+package database
 
 import (
-    "database/sql"
-    "fmt"
-    "os"
-    _ "github.com/lib/pq"
+	"database/sql"
+	"fmt"
+	"os"
+
+	_ "github.com/lib/pq"
 )
 
-func Connect() (*sql.DB, error) {
-    connStr := fmt.Sprintf(
-        "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-        os.Getenv("DB_HOST"),
-        os.Getenv("DB_PORT"),
-        os.Getenv("DB_USER"),
-        os.Getenv("DB_PASSWORD"),
-        os.Getenv("DB_NAME"),
-    )
-    return sql.Open("postgres", connStr)
+func ConnectDB() (*sql.DB, error) {
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		return nil, fmt.Errorf("DATABASE_URL manquante")
+	}
+
+	db, err := sql.Open("postgres", databaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }
