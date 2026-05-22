@@ -1,6 +1,7 @@
 import { getValidToken } from "../utils/auth";
 import { getWatchlist } from "./watchlist";
 import { getFilmById } from "./films";
+import formatTempsEcoule from "../utils/time"
 
 const API_URL = import.meta.env.VITE_API_URL;
 function decodeJwt(token) {
@@ -102,24 +103,6 @@ export async function getProfilData() {
     })
   );
 
-  const formatTempsEcoule = (dateString) => {
-    if (!dateString) return "";
-
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-
-    const minutes = Math.floor(diffMs / (1000 * 60));
-    const heures = Math.floor(diffMs / (1000 * 60 * 60));
-    const jours = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (minutes < 1) return "à l’instant";
-    if (minutes < 60) return `${minutes}min`;
-    if (heures < 24) return `${heures}h`;
-    if (jours < 7) return `${jours}j`;
-
-    return date.toLocaleDateString("fr-FR");
-  };
 
   const commentaires = await Promise.all(
     commentairesBase.slice(0, 5).map(async (commentaire) => {
@@ -205,3 +188,5 @@ async function getMesNotes() {
 
   return response.json();
 }
+
+

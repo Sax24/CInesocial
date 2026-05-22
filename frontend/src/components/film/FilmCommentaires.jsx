@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   getCommentairesByFilm,
   ajouterCommentaire,
@@ -102,10 +103,10 @@ export default function FilmCommentaires({ filmId }) {
             reponses: (commentaire.reponses || []).map((reponse) =>
               reponse.id === commentaireId
                 ? {
-                    ...reponse,
-                    likes: result.likes,
-                    a_like: result.liked,
-                  }
+                  ...reponse,
+                  likes: result.likes,
+                  a_like: result.liked,
+                }
                 : reponse
             ),
           };
@@ -150,7 +151,7 @@ export default function FilmCommentaires({ filmId }) {
     }
   };
 
- 
+
 
   const DeleteButton = ({ onClick }) => (
     <button
@@ -180,11 +181,10 @@ export default function FilmCommentaires({ filmId }) {
   const ReactionButton = ({ commentaire }) => (
     <button
       onClick={() => handleToggleReaction(commentaire.id)}
-      className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition ${
-        commentaire.a_like
-          ? "bg-pink-50 text-pink-500 hover:bg-pink-100"
-          : "text-gray-500 hover:bg-white hover:text-pink-500"
-      }`}
+      className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm transition ${commentaire.a_like
+        ? "bg-pink-50 text-pink-500 hover:bg-pink-100"
+        : "text-gray-500 hover:bg-white hover:text-pink-500"
+        }`}
     >
       <span>❤️</span>
       <span>{commentaire.likes ?? 0}</span>
@@ -206,9 +206,12 @@ export default function FilmCommentaires({ filmId }) {
               <div className="flex items-start justify-between rounded-2xl bg-gray-50 px-4 py-3 transition hover:bg-gray-100">
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-gray-800">
+                    <Link
+                      to={`/u/${encodeURIComponent(commentaire.user)}`}
+                      className="text-sm font-semibold text-violet-600 hover:underline"
+                    >
                       {commentaire.user}
-                    </p>
+                    </Link>
                     <span className="text-xs text-gray-400">
                       {formatTempsEcoule(commentaire.cree_le)}
                     </span>
@@ -279,9 +282,12 @@ export default function FilmCommentaires({ filmId }) {
                     >
                       <div className="flex-1 text-left">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-semibold text-gray-800">
+                          <Link
+                            to={`/u/${encodeURIComponent(reponse.user)}`}
+                            className="text-sm font-semibold text-violet-600 hover:underline"
+                          >
                             {reponse.user}
-                          </p>
+                          </Link>
                           <span className="text-xs text-gray-400">
                             {formatTempsEcoule(reponse.cree_le)}
                           </span>

@@ -113,6 +113,14 @@ func main() {
 		}
 	}))
 
+	http.HandleFunc("/utilisateurs/profil", func(w http.ResponseWriter, r *http.Request) {
+    handlers.GetProfilPublic(database, w, r)
+})
+
+http.HandleFunc("/utilisateurs/commentaires", func(w http.ResponseWriter, r *http.Request) {
+    handlers.GetCommentairesUtilisateur(database, w, r)
+})
+
 	http.HandleFunc("/activites", func(w http.ResponseWriter, r *http.Request) {
 	handlers.GetActivites(database, w, r)
 	})

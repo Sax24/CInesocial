@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getActivites } from "../services/activites";
+import { Link } from "react-router-dom";
 import formatTempsEcoule from "../utils/time";
 
 function renderStars(note) {
@@ -13,7 +14,12 @@ function getActivityContent(activity) {
       icon: "🎬",
       content: (
         <>
-          <span className="font-semibold text-violet-600">{activity.auteur}</span>{" "}
+          <Link
+            to={`/u/${encodeURIComponent(activity.auteur)}`}
+            className="font-semibold text-violet-600 hover:underline"
+          >
+            {activity.auteur}
+          </Link>
           a noté{" "}
           <span className="font-semibold text-gray-900">{activity.cible}</span>{" "}
           <span className="ml-1">{renderStars(activity.note)}</span>
@@ -27,7 +33,12 @@ function getActivityContent(activity) {
       icon: "💬",
       content: (
         <>
-          <span className="font-semibold text-violet-600">{activity.auteur}</span>{" "}
+          <Link
+            to={`/u/${encodeURIComponent(activity.auteur)}`}
+            className="font-semibold text-violet-600 hover:underline"
+          >
+            {activity.auteur}
+          </Link>
           a commenté{" "}
           <span className="font-semibold text-gray-900">{activity.cible}</span>
         </>
@@ -39,7 +50,12 @@ function getActivityContent(activity) {
     icon: "📋",
     content: (
       <>
-        <span className="font-semibold text-violet-600">{activity.auteur}</span>{" "}
+        <Link
+          to={`/u/${encodeURIComponent(activity.auteur)}`}
+          className="font-semibold text-violet-600 hover:underline"
+        >
+          {activity.auteur}
+        </Link>
         a ajouté{" "}
         <span className="font-semibold text-gray-900">{activity.cible}</span>{" "}
         à sa watchlist

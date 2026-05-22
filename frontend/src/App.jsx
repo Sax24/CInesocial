@@ -1,13 +1,14 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Register from "./pages/Register1";
-import Login2 from "./pages/Login2";
+import Register from "./pages/Register";
+import Login2 from "./pages/Login";
 import { Toaster } from "react-hot-toast";
 import Landing from "./pages/Landing";
 import  ProtectedRoute from "./components/ProtectedRoute";
 import  PublicRoute from "./components/PublicRoute";
 import FilmDetail from "./pages/FilmDetail";
 import Profil from "./pages/Profil";
+import ProfilPublic from "./pages/ProfilPublic";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/actualites" element={<Landing />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/recherche" element={<Landing />} />
+          <Route path="/u/:nom_u" element={<ProfilPublic />} />
         </Route>
         
       </Routes>

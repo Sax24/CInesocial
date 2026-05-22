@@ -498,3 +498,62 @@ func GetMesCommentaires(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(commentaires)
 }
+
+func GetCommentairesUtilisateur(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	nomU := r.URL.Query().Get("nom_u")
+	if nomU == "" {
+		http.Error(w, "nom_u manquant", http.StatusBadRequest)
+		return
+	}
+
+	rows, err := db.Query(`
+		SELECT c.id, c.tmdb_id, c.contenu, c.cree_le, COUNT(lc.id) AS likes
+		FROM commentaires c
+		JOIN utilisateurs u ON u.id = c.utilisateur_id
+		LEFT JOIN likes_commentaires lc ON lc.commentaire_id = c.id
+		WHERE u.nom_u = $1 AND c.parent_commentaire_id IS NULL
+		GROUP BY c.id, c.tmdb_id, c.contenu, c.cree_le
+		ORDER BY c.cree_le DESC
+		LIMIT 10
+	`, nomU)
+	if err != nil {
+		http.Error(w, "Erreur récupération commentaires", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	type Commentaire struct {
+		ID      int    `json:"id"`
+		TmdbID  int    `json:"tmdb_id"`
+		Contenu string `json:"contenu"`
+		CreeLe  string `json:"cree_le"`
+		Likes   int    `json:"likes"`
+	}
+
+	var commentaires []Commentaire
+
+	for rows.Next() {
+		var c Commentaire
+		var creeLe time.Time
+
+		if err := rows.Scan(&c.ID, &c.TmdbID, &c.Contenu, &creeLe, &c.Likes); err != nil {
+			http.Error(w, "Erreur lecture commentaires", http.StatusInternalServerError)
+			return
+		}
+
+		c.CreeLe = creeLe.Format(time.RFC3339)
+		commentaires = append(commentaires, c)
+	}
+
+	if commentaires == nil {
+		commentaires = []Commentaire{}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(commentaires)
+}
