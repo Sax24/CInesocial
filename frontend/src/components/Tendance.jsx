@@ -8,22 +8,38 @@ export default function Tendance() {
     const [loading, setLoading] = useState(true);
     const [erreur, setErreur] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
-    const navigate = useNavigate();
 
+    const navigate = useNavigate();
     const filmsParVue = 4;
 
     const handleClick = (id) => {
-        navigate("/film/details/" + id)
+        navigate("/film/details/" + id);
     };
-
 
     useEffect(() => {
         async function fetchFilms() {
             try {
                 const data = await getFilmsTendances();
-                setFilms(data.results);
+
+                console.log("Données reçues :", data);
+
+                // Accepte un tableau direct ou un objet contenant results
+                let listeFilms = [];
+
+                if (Array.isArray(data)) {
+                    listeFilms = data;
+                } else if (Array.isArray(data?.results)) {
+                    listeFilms = data.results;
+                } else {
+                    throw new Error(
+                        "Le format des données reçues est invalide."
+                    );
+                }
+
+                setFilms(listeFilms);
             } catch (error) {
-                setErreur(error.message);
+                console.error("Erreur chargement des films :", error);
+                setErreur(error.message || "Impossible de charger les films.");
             } finally {
                 setLoading(false);
             }
@@ -50,6 +66,10 @@ export default function Tendance() {
         return <p className="p-6 text-red-500">{erreur}</p>;
     }
 
+    if (films.length === 0) {
+        return <p className="p-6">Aucun film tendance disponible.</p>;
+    }
+
     return (
         <section className="min-h-screen px-6 py-10">
             <div className="mx-auto max-w-7xl">
@@ -58,6 +78,7 @@ export default function Tendance() {
                         <p className="mb-2 text-sm uppercase tracking-[0.25em] text-violet-500">
                             Trending now
                         </p>
+
                         <h2 className="text-3xl font-bold text-black md:text-4xl">
                             Découvrez les films tendances
                         </h2>
@@ -104,8 +125,12 @@ export default function Tendance() {
                                         <div className="relative h-96 overflow-hidden">
                                             <img
                                                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
-                                                alt={item.title}
+                                                src={
+                                                    item.poster_path
+                                                        ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                                                        : "/placeholder.png"
+                                                }
+                                                alt={item.title || "Affiche du film"}
                                             />
 
                                             <div className="absolute inset-0 bg-linear-to-t from-black via-black/30 to-transparent" />
@@ -114,8 +139,9 @@ export default function Tendance() {
                                                 <h3 className="text-lg font-semibold text-white">
                                                     {item.title}
                                                 </h3>
+
                                                 <p className="mt-1 text-sm text-zinc-300">
-                                                    {item.release_date}
+                                                    {item.release_date || "Date inconnue"}
                                                 </p>
                                             </div>
                                         </div>
