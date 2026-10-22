@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func Connect() (*sql.DB, error) {
@@ -14,7 +14,7 @@ func Connect() (*sql.DB, error) {
 		return nil, fmt.Errorf("DATABASE_URL manquante")
 	}
 
-	db, err := sql.Open("postgres", databaseURL)
+	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return nil, err
 	}
